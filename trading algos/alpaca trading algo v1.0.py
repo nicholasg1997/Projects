@@ -1,38 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
-
-import os
-import alpaca_trade_api as tradeapi
-import numpy as np 
-import pandas as pd
-
-
-# In[ ]:
-
-
-stock_list = ['AAPL', 'KO', 'IVV', 'BP','CSCO','PG','GOLD']
-commodity_list = ['USO', 'UNG', 'GLD', 'PPLT', 'DBA']
-
-
-# In[ ]:
-
-
-high_price = {'AAPL': 0, 'KO' : 0, 'IVV': 0, 'BP' : 0,'CSCO' : 0,'PG' : 0,'GOLD' : 0,
-             'USO' : 0, 'UNG' : 0, 'GLD' : 0, 'PPLT' : 0, 'DBA' : 0}
-
-
-# In[ ]:
-
-
-high_price
-
-
-# In[1]:
-
-
 import os
 import alpaca_trade_api as tradeapi
 import numpy as np 
