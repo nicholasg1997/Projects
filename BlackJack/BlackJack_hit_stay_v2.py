@@ -8,6 +8,13 @@ from gym import spaces
 import random
 from tqdm import tqdm
 
+def count_(deck, *args):
+    """takes in card numbers and counts sum of all cards"""
+    counts = []
+    for card in args:
+        c = deck.count(card)
+        counts.append(c)
+    return sum(counts)
 
 class BlackJack(gym.Env):
     metadata = {'render.modes': ['console']}
@@ -61,19 +68,9 @@ class BlackJack(gym.Env):
 
     def calculate_ratio(self):
         # calculte high med low cards percentage
-        one = round(self.deck.count(1) / len(self.deck), 2)
-        two = round(self.deck.count(2) / len(self.deck), 2)
-        three = round(self.deck.count(3) / len(self.deck), 2)
-        four = round(self.deck.count(4) / len(self.deck), 2)
-        five = round(self.deck.count(5) / len(self.deck), 2)
-        six = round(self.deck.count(6) / len(self.deck), 2)
-        seven = round(self.deck.count(7) / len(self.deck), 2)
-        eight = round(self.deck.count(8) / len(self.deck), 2)
-        nine = round(self.deck.count(9) / len(self.deck), 2)
-        ten = round(self.deck.count(10) / len(self.deck), 2)
-        low = sum([one, two, three])
-        med = sum([four, five, six, seven])
-        high = sum([eight, nine, ten])
+        low = round(count_(self.deck, 1, 2, 3) / len(self.deck), 2)
+        med = round(count_(self.deck, 4, 5, 6, 7) / len(self.deck), 2)
+        high = round(count_(self.deck, 8, 9, 10) / len(self.deck), 2)
         return low, med, high
 
     def step(self, action):
