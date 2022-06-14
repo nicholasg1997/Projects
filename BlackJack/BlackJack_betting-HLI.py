@@ -11,6 +11,7 @@ from stable_baselines3 import PPO
 
 
 class BlackJack(gym.Env):
+    """Black jack game for gym"""
     metadata = {'render.modes': ['console']}
     # 5 different betting multiplers
     STAY = 0
