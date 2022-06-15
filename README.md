@@ -1,1 +1,1 @@
-# Colection of my projects
+# Collection of my projects
