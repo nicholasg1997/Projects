@@ -1,19 +1,28 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import numpy as np
-import gym
-import os
-from gym import spaces
 import random
-from tqdm import tqdm
+
+import gym
+import numpy as np
+from gym import spaces
 from stable_baselines3 import PPO
+from tqdm import tqdm
+
+
+def count_(deck, *args):
+    """takes in card numbers and counts sum of all cards"""
+    counts = []
+    for card in args:
+        c = deck.count(card)
+        counts.append(c)
+    return sum(counts)
 
 
 class BlackJack(gym.Env):
     """Black jack game for gym"""
     metadata = {'render.modes': ['console']}
-    # 5 different betting multiplers
+    # 5 different betting multipliers
     STAY = 0
     HIT = 1
 
@@ -21,7 +30,7 @@ class BlackJack(gym.Env):
         super(BlackJack, self).__init__()
         # model takes players hand sum, players first card, and low, medium, high cards percentage
         self.betting_model = PPO.load('data/PPO_BlackJack_Hit_Stay')
-        # prep game deck based on howmany decks in play (default=1)
+        # prep game deck based on how many decks in play (default=1)
         self.decks = decks
         self.deck = self.make_deck()
         # empty both dealer and players hand
@@ -41,7 +50,6 @@ class BlackJack(gym.Env):
         emptying both the player and dealers hand,
         setting dealer face up card to None,
         """
-        # self.deck = self.make_deck()
         self.player_hand = []
         self.dealer_hand = []
         card = self.draw()
@@ -67,25 +75,14 @@ class BlackJack(gym.Env):
         return card
 
     def calculate_ratio(self):
-        # calculte high med low cards percentage
-        one = self.deck.count(1)
-        two = self.deck.count(2)
-        three = self.deck.count(3)
-        four = self.deck.count(4)
-        five = self.deck.count(5)
-        six = self.deck.count(6)
-        seven = self.deck.count(7)
-        eight = self.deck.count(8)
-        nine = self.deck.count(9)
-        ten = self.deck.count(10)
-        low = sum([two, three, four, five, six])
-        med = sum([seven, eight, nine])
-        high = sum([ten, one])
+        # calculate high med low cards percentage
+        low = count_(self.deck, 2, 3, 4, 5, 6)
+        med = count_(self.deck, 7, 8, 9)
+        high = count_(self.deck, 10, 1)
         r = (52 * self.decks) - (low + med + high)
         try:
             hli_index = 100 * ((low - high) / r)
-        except  ZeroDivisionError:
-            # print(len(self.deck))
+        except ZeroDivisionError:
             hli_index = 0
         np.reshape(hli_index, (1,))
         return hli_index
@@ -94,21 +91,10 @@ class BlackJack(gym.Env):
         self.reset()
         bet = action
         done = False
-        ####
-        one = round(self.deck.count(1) / len(self.deck), 2)
-        two = round(self.deck.count(2) / len(self.deck), 2)
-        three = round(self.deck.count(3) / len(self.deck), 2)
-        four = round(self.deck.count(4) / len(self.deck), 2)
-        five = round(self.deck.count(5) / len(self.deck), 2)
-        six = round(self.deck.count(6) / len(self.deck), 2)
-        seven = round(self.deck.count(7) / len(self.deck), 2)
-        eight = round(self.deck.count(8) / len(self.deck), 2)
-        nine = round(self.deck.count(9) / len(self.deck), 2)
-        ten = round(self.deck.count(10) / len(self.deck), 2)
-        low = sum([two, three, four, five])
-        med = sum([six, seven])
-        high = sum([eight, nine, ten, one])
-        ####
+
+        low = round(count_(self.deck, 1, 2, 3) / len(self.deck), 2)
+        med = round(count_(self.deck, 4, 5, 6, 7) / len(self.deck), 2)
+        high = round(count_(self.deck, 8, 9, 10) / len(self.deck), 2)
 
         while not done:
             # get observation space
@@ -190,48 +176,12 @@ class BlackJack(gym.Env):
         return np.array(np.reshape(hli_index, (1,)), dtype=np.float32), float(reward), done, info
 
 
-# In[217]:
-
-
-bj = BlackJack()
-
-# In[218]:
-
-
-a = bj.reset()
-
-# In[219]:
-
-
-a, b, c, d = bj.step(0)
-
-# In[220]:
-
-
-np.shape(a)
-
-# In[ ]:
-
-
-# In[ ]:
-
-
-# In[221]:
-
-
 from stable_baselines3.common.env_checker import check_env
 
 env = BlackJack()
-# It will check your custom environment and output additional warnings if needed
 check_env(env)
 
-# In[215]:
-
-
 model = PPO('MlpPolicy', env, verbose=1).learn(100_000)
-
-# In[205]:
-
 
 profits = []
 wins = []
@@ -246,55 +196,9 @@ for i in tqdm(range(20_000)):
     actions.append(action)
     profits.append(reward)
 
-# In[206]:
-
-
 w = wins.count(1)
 l = wins.count(-1)
 w / (w + l)
 
-# In[207]:
-
-
 print(sum(profits))
 print(actions.count(0))
-
-# In[208]:
-
-
-p
-
-# In[ ]:
-
-
-# In[ ]:
-
-
-##################################
-
-
-# In[ ]:
-
-
-# saving models as they learn for tensorboard
-# not working (kernel keeps dying possible because m1 mac)
-
-
-# In[ ]:
-
-
-# models_dir = 'models/PPO'
-# logdir = 'logs'
-
-# if not os.path.exists(models_dir):
-# os.makedirs(models_dir)
-# if not os.path.exists(logdir):
-# os.makedirs(logdir)
-
-# model = PPO('MlpPolicy', env, verbose=0,tensorboard_log=logdir)
-model = PPO('MlpPolicy', env, verbose=0)
-TIMESTEPS = 10_000
-for i in tqdm(range(1, 30 + 1)):
-    model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False)
-    # model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name='PPO')
-    # model.save(f"{models_dir}/{TIMESTEPS * i}")
