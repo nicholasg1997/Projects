@@ -7,6 +7,9 @@ import gym
 from gym import spaces
 import random
 from tqdm import tqdm
+from stable_baselines3 import DQN, PPO
+from stable_baselines3.common.env_checker import check_env
+
 
 def count_(deck, *args):
     """takes in card numbers and counts sum of all cards"""
@@ -15,6 +18,7 @@ def count_(deck, *args):
         c = deck.count(card)
         counts.append(c)
     return sum(counts)
+
 
 class BlackJack(gym.Env):
     metadata = {'render.modes': ['console']}
@@ -136,37 +140,13 @@ class BlackJack(gym.Env):
         return np.array([sum(self.player_hand), self.dealer_hand[0], low, med, high],
                         dtype=np.float32), reward, done, info
 
-
-# In[43]:
-
-
-from stable_baselines3.common.env_checker import check_env
-
 env = BlackJack()
-# It will check your custom environment and output additional warnings if needed
 check_env(env)
-
-# In[ ]:
-
-
-# In[44]:
-
-
-from stable_baselines3 import DQN, PPO
-from stable_baselines3.common.cmd_util import make_vec_env
 
 # Instantiate the env
 env = BlackJack()
-# env = make_vec_env(lambda: env, n_envs=3)
-
-
-# In[45]:
-
 
 model = PPO('MlpPolicy', env, verbose=0).learn(500_000)
-
-# In[48]:
-
 
 wins = []
 n_steps = 20
@@ -181,6 +161,4 @@ for i in tqdm(range(10_000)):
 l = wins.count(-1)
 w = wins.count(1)
 d = wins.count(0.5)
-w / (l + w + d)
-
-
+print(w / (l + w + d))
