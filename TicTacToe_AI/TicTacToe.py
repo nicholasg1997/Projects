@@ -104,7 +104,7 @@ class TicTacToe(gym.Env):
 
         return False, 0
 
-    def get_reward(self, done: bool, tie: bool) -> int:
+    def get_reward(self, done: bool, tie: int) -> int:
         if done:
             if tie:
                 return self.TIE_REWARD
@@ -116,7 +116,7 @@ class TicTacToe(gym.Env):
             return 0
 
 
-env = TicTacToe()
+env = TicTacToe
 env = DummyVecEnv([lambda: env])
 
 model = PPO('MlpPolicy', env, verbose=1)
@@ -127,7 +127,6 @@ while not ttt.is_game_over()[0]:
     b = ttt.board.flatten()
     action, _states = model.predict(b, deterministic=True)
     ttt.step(action)
-    print(ttt.legal_moves)
     ttt.render()
     move = int(input("pick a position: "))
     ttt.step(move)
