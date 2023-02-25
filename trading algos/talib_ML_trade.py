@@ -21,7 +21,7 @@ def trading_algorithm(stock):
     
     #setting up trading enviroment
     os.environ['APCA_API_BASE_URL'] = 'https://paper-api.alpaca.markets'
-    api = tradeapi.REST('PKPGP8G8T9JQJ571OOP7', 's1MXfjil2qZl66qXVrpf1texsQe0RNotp5JZrLjb', api_version='v2')
+    api = tradeapi.REST(API, API_TOKEN, api_version='v2')
     account=api.get_account()
     
     #build data
