@@ -7,7 +7,8 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 
 
 class TicTacToe(gym.Env):
-    """Tic Tac Toe game environment"""
+    """Tic Tac Toe game environment
+    changing train to False will allow you to play against the AI"""
 
     BOARD_SIZE = 3
     TIE_REWARD = 10
