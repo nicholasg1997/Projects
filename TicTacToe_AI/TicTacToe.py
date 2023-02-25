@@ -10,7 +10,7 @@ class TicTacToe(gym.Env):
     """Tic Tac Toe game environment
     changing train to False will allow you to play against the AI"""
 
-    BOARD_SIZE = 5
+    BOARD_SIZE = 3
     TIE_REWARD = 10
     WIN_REWARD = 50
     LOSE_REWARD = -10
